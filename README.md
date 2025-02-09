@@ -1,44 +1,44 @@
-Data Warehouse for Sparkify
+# Cloud Data Warehousing with AWS Redshift
 
-Project Overview
+## Project Overview
+This project builds a **Cloud Data Warehouse** on AWS using **Redshift** to store and analyze song play data for **Sparkify**, a fictional music streaming company. The data comes from JSON log files and song metadata stored in S3.
 
-This project builds an ETL pipeline for a music streaming startup, Sparkify, using Amazon Redshift. The pipeline extracts song and log data from S3, stages them in Redshift, and transforms them into a set of dimensional tables optimized for analytical queries.
+## Technologies Used
+- **AWS Redshift** for cloud data warehousing
+- **AWS S3** for data storage
+- **Python (ETL processing)**
+- **PostgreSQL (SQL for Redshift)**
 
-Schema Design
+## Database Schema (Star Schema)
+### **Fact Table**
+- **songplays** - Records in event data associated with song plays (log data).
+  - `songplay_id`, `start_time`, `user_id`, `level`, `song_id`, `artist_id`, `session_id`, `location`, `user_agent`
 
-The schema follows a star schema with the following tables:
+### **Dimension Tables**
+- **users** - Users in the app.
+  - `user_id`, `first_name`, `last_name`, `gender`, `level`
+- **songs** - Songs in the music database.
+  - `song_id`, `title`, `artist_id`, `year`, `duration`
+- **artists** - Artists in the music database.
+  - `artist_id`, `name`, `location`, `latitude`, `longitude`
+- **time** - Timestamps of records in songplays, broken down into specific units.
+  - `start_time`, `hour`, `day`, `week`, `month`, `year`, `weekday`
 
-Fact Table
+## ETL Process
+1. **Extract** - Reads JSON data from S3.
+2. **Transform** - Parses event log files and extracts required fields.
+3. **Load** - Loads the transformed data into **AWS Redshift**.
 
-songplays: Stores records of song play events.
+## Running the Pipeline
+1. **Launch AWS Redshift Cluster** and configure security settings.
+2. **Run `create_tables.py`** to initialize the database.
+3. **Run `etl.py`** to load data into Redshift.
+4. **Query data in Redshift** to verify.
 
-Dimension Tables
-
-users: Stores user information.
-
-songs: Stores song details.
-
-artists: Stores artist details.
-
-time: Stores timestamp details.
-
-Files
-
-create_tables.py: Creates tables in Redshift.
-
-etl.py: Loads and processes data into Redshift.
-
-sql_queries.py: Contains SQL queries for table creation and data insertion.
-
-dwh.cfg: Configuration file with Redshift credentials.
-
-Running the Pipeline
-
-Create a Redshift cluster and configure dwh.cfg.
-
-Run python create_tables.py to set up the database schema.
-
-Run python etl.py to load and transform data.
-
-Use Redshift's Query Editor to validate data.
-
+## Example Queries
+```sql
+SELECT user_id, COUNT(*) AS play_count 
+FROM songplays 
+GROUP BY user_id 
+ORDER BY play_count DESC;
+```
