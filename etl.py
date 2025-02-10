@@ -1,3 +1,4 @@
+import configparser
 import psycopg2
 from sql_queries import copy_table_queries, insert_table_queries
 
@@ -15,13 +16,17 @@ def insert_tables(cur, conn):
 
 def main():
     """Runs the ETL pipeline to load data into Redshift."""
-    conn = psycopg2.connect("host=your-cluster-endpoint dbname=your-db user=your-user password=your-password port=5439")
+    config = configparser.ConfigParser()
+    config.read('dwh.cfg')
+
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['DB'].values()))
     cur = conn.cursor()
     
     load_staging_tables(cur, conn)
     insert_tables(cur, conn)
     
     conn.close()
-
+    
 if __name__ == "__main__":
     main()
+
